@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>摸鱼模拟器 · Web 版</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen;
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: #fff;
+      width: 360px;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+      padding: 24px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 24px;
+    }
+
+    .stat {
+      margin: 12px 0;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      cursor: pointer;
+      background: #4f46e5;
+      color: #fff;
+    }
+
+    button:disabled {
+      background: #a5b4fc;
+      cursor: not-allowed;
+    }
+
+    .log {
+      margin-top: 16px;
+      background: #f9fafb;
+      border-radius: 8px;
+      padding: 8px;
+      height: 80px;
+      overflow-y: auto;
+      font-size: 13px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>🫡 摸鱼模拟器</h1>
+
+    <div class="stat">📊 今日摸鱼值：<b id="moyu">0</b></div>
+    <div class="stat">⚠️ 老板警觉度：<b id="risk">0</b>%</div>
+
+    <button onclick="moyuOnce()">立刻摸 5 分钟</button>
+    <button onclick="upgrade()" id="upgradeBtn">升级工位（需要 50 摸鱼值）</button>
+
+    <div class="log" id="log"></div>
+  </div>
+
+  <script>
+    let moyu = 0;
+    let risk = 0;
+    let level = 1;
+
+    function log(msg) {
+      const el = document.getElementById('log');
+      el.innerHTML += '• ' + msg + '<br />';
+      el.scrollTop = el.scrollHeight;
+    }
+
+    function moyuOnce() {
+      const gain = 5 * level;
+      moyu += gain;
+      risk += Math.random() * 8;
+
+      if (risk >= 100) {
+        log('❌ 被老板发现了！今日摸鱼清零。');
+        moyu = 0;
+        risk = 0;
+        level = 1;
+      } else {
+        log(`✅ 成功摸鱼 +${gain}`);
+      }
+
+      updateUI();
+    }
+
+    function upgrade() {
+      if (moyu >= 50) {
+        moyu -= 50;
+        level += 1;
+        risk = Math.max(risk - 15, 0);
+        log('🪑 工位升级成功，摸鱼效率提升');
+        updateUI();
+      }
+    }
+
+    function updateUI() {
+      document.getElementById('moyu').innerText = Math.floor(moyu);
+      document.getElementById('risk').innerText = Math.floor(risk);
+      document.getElementById('upgradeBtn').disabled = moyu < 50;
+    }
+
+    log('💼 上班第一天，老板暂时还没注意你…');
+  </script>
+</body>
+</html>
